@@ -1,0 +1,5 @@
+0.正式运行程序前，请将所有.py脚本放置于同一目录下；测试环境为python3.9.18，不推荐在其他版本的环境下测试
+程序根据运行组成，不同部分的依赖包体如下：
+    1.测站数据获取与管理：pymysql、requests（无版本要求）
+    2.优化策略算法：numpy、scipy、pymysql、time（无版本要求）
+    3.评估与成图程序：matplotlib、numpy、itertools、mpl_toolkits（无版本要求）
