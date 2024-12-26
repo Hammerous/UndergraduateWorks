@@ -48,7 +48,7 @@ X = data_frames[fields_to_keep]
 y = data_frames['category']
 
 # 初始化具有预剪枝参数的决策树分类器
-clf = DecisionTreeClassifier(max_depth=5, criterion='entropy',
+clf = DecisionTreeClassifier(max_depth=6, criterion='entropy',
                             class_weight={'algae': 1, 'building': 1, 'water': 1, 'bareland': 1, 'plant': 1},
                             splitter='best', ccp_alpha=0, min_samples_leaf= max(X.shape[0]//1000, 1))
 

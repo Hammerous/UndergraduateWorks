@@ -1,9 +1,8 @@
-import pandas as pd
 import numpy as np
 import joblib
 import spectral
 
-year_num = '2013'
+year_num = '2007'
 
 fields_to_keep = ["NDWI", "NDBI", "TWI", "NDVI", "IBI", "BSI", "CMI", "FAI"]
 
@@ -49,11 +48,11 @@ predicted_image = predicted_image.reshape(envi_image.shape[0], envi_image.shape[
 
 # 定义类别和对应的颜色
 color_map = {
-    'algae': [144, 238, 144],    # 浅绿色
+    'algae': [0, 128, 0],    # 浅绿色
     'building': [255, 0, 0],     # 红色
     'water': [0, 0, 255],        # 蓝色
     'bareland': [255, 255, 0],   # 黄色
-    'plant': [0, 100, 0]         # 暗绿色
+    'plant': [0, 255, 0]         # 暗绿色
 }
 
 # 创建一个新的彩色图像用于保存上色后的结果

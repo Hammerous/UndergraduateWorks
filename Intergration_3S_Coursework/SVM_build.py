@@ -51,12 +51,12 @@ y = data_frames['category']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 # 创建SVM分类器
-clf = svm.SVC(cache_size=1000, verbose=True, kernel='rbf')
+clf = svm.SVC(cache_size=1000, verbose=True, kernel='rbf', degree=8)
 
 # 进行十折交叉验证
-kf = KFold(n_splits=10, shuffle=True)
-cv_scores = cross_val_score(clf, X, y, cv=kf, n_jobs=-1)
-print(cv_scores)
+# kf = KFold(n_splits=10, shuffle=True)
+# cv_scores = cross_val_score(clf, X, y, cv=kf, n_jobs=-1)
+# print(cv_scores)
 
 # 训练分类器
 clf.fit(X_train, y_train)
