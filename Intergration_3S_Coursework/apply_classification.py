@@ -1,7 +1,7 @@
-import pandas as pd
 import numpy as np
 import joblib
 import spectral
+from osgeo import gdal, osr
 
 year_num = '2024'
 
@@ -51,11 +51,11 @@ predicted_image[combined_mask] = np.nan
 
 # 定义类别和对应的颜色
 color_map = {
-    'algae': [144, 238, 144],    # 浅绿色
+    'algae': [0, 128, 0],    # 浅绿色
     'building': [255, 0, 0],     # 红色
     'water': [0, 0, 255],        # 蓝色
     'bareland': [255, 255, 0],   # 黄色
-    'plant': [0, 100, 0]         # 暗绿色
+    'plant': [0, 255, 0]         # 暗绿色
 }
 
 # 创建一个新的彩色图像用于保存上色后的结果
@@ -65,9 +65,45 @@ colored_image = np.zeros((predicted_image.shape[0], predicted_image.shape[1], 3)
 for label, color in color_map.items():
     colored_image[predicted_image == label] = color
 
-from PIL import Image
-# 保存上色后的图像为PNG文件
-colored_image_pil = Image.fromarray(colored_image)
-colored_image_pil.save(f'colored_predicted_image_{year_num}.png')
+# 保存彩色图像为 GeoTIFF 文件
+def save_as_geotiff(output_path, image_array, geo_transform):
+    driver = gdal.GetDriverByName("GTiff")
+    rows, cols, bands = image_array.shape
+    dataset = driver.Create(output_path, cols, rows, bands, gdal.GDT_Byte)
 
-print("上色后的预测图像已保存为 'colored_predicted_image.png' 文件。")
+    if geo_transform:
+        dataset.SetGeoTransform([
+            float(geo_transform[3]),  # 左上角 x 坐标
+            float(geo_transform[5]),  # 像素大小 x
+            0.0,                      # 旋转参数 x
+            float(geo_transform[4]),  # 左上角 y 坐标
+            0.0,                      # 旋转参数 y
+            -float(geo_transform[6])  # 像素大小 y
+        ])
+
+    # 设置投影为 EPSG:32651
+    srs = osr.SpatialReference()
+    srs.ImportFromEPSG(32651)
+    dataset.SetProjection(srs.ExportToWkt())
+
+    for band in range(bands):
+        dataset.GetRasterBand(band + 1).WriteArray(image_array[:, :, band])
+
+    dataset.FlushCache()
+    dataset = None
+
+# 保存 GeoTIFF
+# 获取元数据和数据
+metadata = envi_image.metadata
+geo_transform = metadata.get('map info', None)  # 获取地理参考信息
+output_tiff_path = f"colored_predicted_image_{year_num}.tif"
+save_as_geotiff(output_tiff_path, colored_image, geo_transform)
+print(f"彩色图像已保存为 GeoTIFF 文件：{output_tiff_path}")
+
+
+# from PIL import Image
+# # 保存上色后的图像为PNG文件
+# colored_image_pil = Image.fromarray(colored_image)
+# colored_image_pil.save(f'colored_predicted_image_{year_num}.png')
+
+# print("上色后的预测图像已保存为 'colored_predicted_image' 文件。")
